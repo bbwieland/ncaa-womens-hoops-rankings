@@ -8,6 +8,8 @@ landing_page <- read_csv(
 )
 
 methodology <- read_file("https://raw.githubusercontent.com/bbwieland/ncaa-womens-hoops-rankings/main/methodology.md")
+dictionary <- read_file("https://raw.githubusercontent.com/bbwieland/ncaa-womens-hoops-rankings/main/dictionary.md")
+
 
 net_rating_format <- function(x)
   sprintf("%+.2f", x * 100)
@@ -107,7 +109,8 @@ ui <- fluidPage(
              reactableOutput("homepage")),
     tabPanel(title = "Methodology",
              includeMarkdown(methodology)),
-    tabPanel(title = "Dictionary")
+    tabPanel(title = "Dictionary",
+             includeMarkdown(dictionary))
   ),
   tags$head(tags$style(type = 'text/css',
                        ".nav-tabs {font-size: 20px}
