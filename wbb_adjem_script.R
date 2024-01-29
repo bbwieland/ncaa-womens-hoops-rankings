@@ -103,8 +103,8 @@ calculate_team_coefficients <- function(team_id_season,
                                                                   game_id_model = .x))
   
   team_eff_season <- team_eff_results %>%
-    summarise(off_eff = mean(off_eff),
-              def_eff = mean(def_eff),
+    summarise(off_eff = mean(off_eff) + hca_coef$overall_ppp,
+              def_eff = mean(def_eff) + hca_coef$overall_ppp,
               net_eff = off_eff - def_eff,
               poss = mean(poss)) %>%
     mutate(team_id = team_id_season) %>%
