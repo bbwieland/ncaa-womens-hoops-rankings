@@ -7,6 +7,8 @@ landing_page <- read_csv(
   "https://raw.githubusercontent.com/bbwieland/ncaa-womens-hoops-rankings/main/landing_page.csv"
 )
 
+methodology_url <- "https://raw.githubusercontent.com/bbwieland/ncaa-womens-hoops-rankings/main/methodology.md"
+
 net_rating_format <- function(x)
   sprintf("%+.2f", x * 100)
 
@@ -94,18 +96,25 @@ table_theme <- function() {
   )
 }
 
+
+# Begin UI ----------------------------------------------------------------
+
 ui <- fluidPage(
   titlePanel("Women's College Basketball Efficiency Rankings",
              windowTitle = "WBB Rankings"),
   tabsetPanel(
     tabPanel(title = "Rankings",
              reactableOutput("homepage")),
-    tabPanel(title = "Methodology"),
+    tabPanel(title = "Methodology",
+             includeMarkdown(methodology_url)),
     tabPanel(title = "Dictionary")
   ),
   tags$head(tags$style(type = 'text/css',
                        ".nav-tabs {font-size: 20px}"))
 )
+
+
+# Begin Server ------------------------------------------------------------
 
 server <- function(input, output) {
   homepage <- reactable(
