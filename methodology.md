@@ -1,3 +1,4 @@
+
 The ranking system uses an adjusted efficiency margin framework similar to other popular college basketball websites (KenPom, Barttorvik, etc) to calculate efficiency ratings for women's basketball. 
 
 ### Game Ratings
