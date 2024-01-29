@@ -147,9 +147,9 @@ team_results <- model_results %>%
 # Generating the tables ---------------------------------------------------
 
 landing_page <- team_results %>%
-  mutate(off_rk = row_number(rev(off_eff)),
+  mutate(off_rk = row_number(-(off_eff)),
          def_rk = row_number(def_eff),
-         net_rk = row_number(rev(net_eff)),
+         net_rk = row_number(-(net_eff)),
          poss_rk = row_number((-poss))) %>%
   select(team, conf, record, conf_record, net_eff, net_rk, off_eff, off_rk, def_eff, def_rk, poss, poss_rk)
 

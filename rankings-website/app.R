@@ -2,14 +2,14 @@ library(shiny)
 library(readr)
 library(reactable)
 library(reactablefmtr)
+library(markdown)
 
-landing_page <- read_csv(
+landing_page <- readr::read_csv(
   "https://raw.githubusercontent.com/bbwieland/ncaa-womens-hoops-rankings/main/landing_page.csv"
 )
 
-methodology <- read_file("https://raw.githubusercontent.com/bbwieland/ncaa-womens-hoops-rankings/main/methodology.md")
-dictionary <- read_file("https://raw.githubusercontent.com/bbwieland/ncaa-womens-hoops-rankings/main/dictionary.md")
-
+methodology <- readr::read_file("https://raw.githubusercontent.com/bbwieland/ncaa-womens-hoops-rankings/main/methodology.md")
+dictionary <- readr::read_file("https://raw.githubusercontent.com/bbwieland/ncaa-womens-hoops-rankings/main/dictionary.md")
 
 net_rating_format <- function(x)
   sprintf("%+.2f", x * 100)
@@ -116,7 +116,6 @@ ui <- fluidPage(
                        ".nav-tabs {font-size: 20px}
                        p {font-size: 20px"))
 )
-
 
 # Begin Server ------------------------------------------------------------
 
