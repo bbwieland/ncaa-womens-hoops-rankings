@@ -6,4 +6,4 @@
 
 **Net Efficiency:** How many points the team would outscore an average Divsion 1 team by over 100 possessions.
 
-**Possessions:** THe average number of possessions for the team in their games this season. Not adjusted for opponent tempo.
+**Possessions:** The average number of possessions for the team in their games this season. Not adjusted for opponent tempo.
