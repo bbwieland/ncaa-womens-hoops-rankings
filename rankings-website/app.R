@@ -121,7 +121,7 @@ ui <- fluidPage(
 
 server <- function(input, output) {
   homepage <- reactable(
-    landing_page,
+    landing_page %>% select(-team_id),
     theme = table_theme(),
     pagination = FALSE,
     searchable = TRUE,

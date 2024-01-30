@@ -42,13 +42,6 @@ scores_clean <- scores %>%
          game_location = team_home_away, 
          conf_game, poss)
 
-# Sanity check: ensuring no duplicate game_ids
-
-scores_clean %>% group_by(game_id) %>% count() %>% pull(n) %>% max()
-
-# Sanity check: confirming D1-D1 filtering
-
-length(unique(c(scores_clean$team_id, scores_clean$opponent_id)))
 
 # Home court advantage coefficients ---------------------------------------
 
@@ -142,7 +135,7 @@ team_results <- model_results %>%
   left_join(team_key, by = c("team_id" = "espn_id")) %>%
   arrange(-net_eff) %>%
   left_join(team_records, by = "team_id") %>%
-  select(team, conf, record, conf_record, everything())
+  select(team_id, team, conf, record, conf_record, everything())
 
 # Generating the tables ---------------------------------------------------
 
@@ -151,6 +144,6 @@ landing_page <- team_results %>%
          def_rk = row_number(def_eff),
          net_rk = row_number(-(net_eff)),
          poss_rk = row_number((-poss))) %>%
-  select(team, conf, record, conf_record, net_eff, net_rk, off_eff, off_rk, def_eff, def_rk, poss, poss_rk)
+  select(team_id, team, conf, record, conf_record, net_eff, net_rk, off_eff, off_rk, def_eff, def_rk, poss, poss_rk)
 
 write_csv(landing_page, "landing_page.csv")
