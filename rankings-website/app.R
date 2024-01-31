@@ -1,4 +1,5 @@
 library(shiny)
+library(shinythemes)
 library(readr)
 library(reactable)
 library(reactablefmtr)
@@ -25,11 +26,9 @@ off_def_format <- function(x)
 poss_format <- function(x)
   sprintf("%.1f", x)
 
-final_score_format <- function(x)
-  round(x)
-
 fanmatch <- fanmatch %>%
-  select(-c(home_id, away_id))
+  select(game_time, net_rk_home, team_home, net_rk_away, team_away, 
+         final_score_proj, poss_est, quality, competitiveness)
 
 rating_width <- 125
 rank_width <- 40
@@ -113,6 +112,7 @@ table_theme <- function() {
 # Begin UI ----------------------------------------------------------------
 
 ui <- fluidPage(
+  theme = shinytheme("yeti"),
   titlePanel("Women's College Basketball Efficiency Rankings",
              windowTitle = "WBB Rankings"),
   tabsetPanel(
@@ -258,6 +258,9 @@ server <- function(input, output) {
     fanmatch, 
     theme = table_theme(),
     pagination = FALSE,
+    searchable = TRUE,
+    language = reactableLang(searchPlaceholder = "Filter by team...",
+                             noData = "No team found."),
     columns = list(
       net_rk_home = colDef(
         name = "",
@@ -273,10 +276,45 @@ server <- function(input, output) {
         vAlign = "center"
       ), 
       team_home = colDef(
-        name = "Home Team"
+        name = "Home Team",
+        width = 250,
+        sortable = FALSE
       ),
       team_away = colDef(
-        name = "Road Team"
+        name = "Road Team",
+        width = 250,
+        sortable = FALSE
+      ),
+      game_time = colDef(
+        name = "Time",
+        width = 150
+      ),
+      final_score_proj = colDef(
+        name = "Proj. Score",
+        align = "center",
+        width = 200,
+        sortable = FALSE
+      ), 
+      poss_est = colDef(
+        name = "Poss",
+        align = "center",
+        width = 80,
+        cell = poss_format,
+        defaultSortOrder = "desc"
+      ),
+      quality = colDef(
+        name = "Quality",
+        align = "center",
+        width = 140,
+        cell = poss_format,
+        defaultSortOrder = "desc"
+      ),
+      competitiveness = colDef(
+        name = "Closeness",
+        align = "center",
+        width = 140,
+        cell = poss_format,
+        defaultSortOrder = "desc"
       )
     )
     
