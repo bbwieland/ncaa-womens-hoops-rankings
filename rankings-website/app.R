@@ -9,6 +9,10 @@ landing_page <- readr::read_csv(
   "https://raw.githubusercontent.com/bbwieland/ncaa-womens-hoops-rankings/main/landing_page.csv"
 )
 
+fanmatch <- readr::read_csv(
+  "https://raw.githubusercontent.com/bbwieland/ncaa-womens-hoops-rankings/main/fanmatch.csv"
+)
+
 methodology <- readr::read_file("https://raw.githubusercontent.com/bbwieland/ncaa-womens-hoops-rankings/main/methodology.md")
 dictionary <- readr::read_file("https://raw.githubusercontent.com/bbwieland/ncaa-womens-hoops-rankings/main/dictionary.md")
 
@@ -108,6 +112,8 @@ ui <- fluidPage(
   tabsetPanel(
     tabPanel(title = "Rankings",
              reactableOutput("homepage")),
+    tabPanel(title = "Matchups",
+             reactableOutput("matchups")),
     tabPanel(title = "Methodology",
              includeMarkdown(methodology)),
     tabPanel(title = "Dictionary",
@@ -121,6 +127,9 @@ ui <- fluidPage(
 # Begin Server ------------------------------------------------------------
 
 server <- function(input, output) {
+  
+  ## Homepage Table ----
+  
   homepage <- reactable(
     landing_page %>% select(-team_id),
     theme = table_theme(),
@@ -244,6 +253,16 @@ server <- function(input, output) {
   )
   
   output$homepage <- renderReactable(homepage)
+  
+  ## FanMatch Table ----
+  
+  matchups <- reactable(
+    fanmatch %>% select(-c(home_id, away_id)), 
+    theme = table_theme(),
+    
+  )
+  
+  output$fanmatch <- renderReactable(matchups)
   
 }
 
