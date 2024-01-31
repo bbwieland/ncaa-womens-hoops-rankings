@@ -25,6 +25,12 @@ off_def_format <- function(x)
 poss_format <- function(x)
   sprintf("%.1f", x)
 
+final_score_format <- function(x)
+  round(x)
+
+fanmatch <- fanmatch %>%
+  select(-c(home_id, away_id))
+
 rating_width <- 125
 rank_width <- 40
 
@@ -143,60 +149,52 @@ server <- function(input, output) {
         cell = net_rating_format,
         align = "center",
         width = rating_width,
-        defaultSortOrder = "desc",
-        style = color_scales(landing_page,
-                             colors = rating_scale)
+        defaultSortOrder = "desc"
       ),
       off_eff = colDef(
         name = "Off Eff",
         cell = off_def_format,
         align = "center",
         width = rating_width,
-        defaultSortOrder = "desc",
-        style = color_scales(landing_page,
-                             colors = rating_scale)
+        defaultSortOrder = "desc"
       ),
       def_eff = colDef(
         name = "Def Eff",
         cell = off_def_format,
         align = "center",
-        width = rating_width,
-        style = color_scales(landing_page,
-                             colors = rev(rating_scale))
+        width = rating_width
       ),
       poss = colDef(
         name = "Poss",
         cell = poss_format,
         width = rating_width,
         align = "center",
-        defaultSortOrder = "desc",
-        style = color_scales(landing_page,
-                             colors = tempo_scale)
+        defaultSortOrder = "desc"
       ),
       off_rk = colDef(
         name = "",
         align = "center",
         width = rank_width,
         sortable = FALSE,
-        style = color_scales(
-          landing_page,
-          color_by = "off_eff",
-          text_size = 14,
-          colors = rating_scale
-        ),
-        vAlign = "center"
+        style = cell_style(
+          #landing_page,
+          #color_by = "off_eff",
+          font_size = 14,
+          vertical_align = "center"
+          #colors = rating_scale
+        )
       ),
       def_rk = colDef(
         name = "",
         align = "center",
         width = rank_width,
-        style = color_scales(
-          landing_page,
-          color_by = "def_eff",
-          text_size = 14,
-          colors = rev(rating_scale)
+        style = cell_style(
+          #landing_page,
+          #color_by = "def_eff",
+          font_size = 14,
+          vertical_align = "center"
+          #colors = rev(rating_scale)
         ),
-        vAlign = "center",
         sortable = FALSE
       ),
       net_rk = colDef(
@@ -204,13 +202,13 @@ server <- function(input, output) {
         align = "center",
         width = rank_width,
         sortable = FALSE,
-        style = color_scales(
-          landing_page,
-          color_by = "net_eff",
-          text_size = 14,
-          colors = rating_scale
-        ),
-        vAlign = "center"
+        style = cell_style(
+          #landing_page,
+          #color_by = "net_eff",
+          font_size = 14,
+          vertical_align = "center"
+          #colors = rating_scale
+        )
       ),
       conf_record = colDef(
         name = "Conf W-L",
@@ -223,13 +221,13 @@ server <- function(input, output) {
         align = "center",
         width = rank_width,
         sortable = FALSE,
-        style = color_scales(
-          landing_page,
-          color_by = "poss",
-          text_size = 14,
-          colors = tempo_scale
-        ),
-        vAlign = "center"
+        style = cell_style(
+          # landing_page,
+          # color_by = "poss",
+          font_size = 14,
+          vertical_align = "center"
+          # colors = tempo_scale
+        )
       ),
       conf = colDef(
         name = "Conference",
@@ -257,12 +255,34 @@ server <- function(input, output) {
   ## FanMatch Table ----
   
   matchups <- reactable(
-    fanmatch %>% select(-c(home_id, away_id)), 
+    fanmatch, 
     theme = table_theme(),
+    pagination = FALSE,
+    columns = list(
+      net_rk_home = colDef(
+        name = "",
+        width = rank_width, sortable = FALSE,
+        style = cell_style(font_size = 14,
+                           vertical_align = "center"),
+      ),
+      net_rk_away = colDef(
+        name = "",
+        width = rank_width, sortable = FALSE,
+        style = cell_style(font_size = 14,
+                           vertical_align = "center"),
+        vAlign = "center"
+      ), 
+      team_home = colDef(
+        name = "Home Team"
+      ),
+      team_away = colDef(
+        name = "Road Team"
+      )
+    )
     
   )
   
-  output$fanmatch <- renderReactable(matchups)
+  output$matchups <- renderReactable(matchups)
   
 }
 

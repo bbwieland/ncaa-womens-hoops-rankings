@@ -42,6 +42,10 @@ fanmatch <- daily_games %>%
     home_pts_est > away_pts_est & home_pts_est - away_pts_est < 1 ~ away_pts_est - 0.5,
     away_pts_est > home_pts_est & away_pts_est - home_pts_est < 1 ~ away_pts_est + 0.5,
     TRUE ~ away_pts_est
-  ))
+  )) %>% 
+  arrange(-quality) %>%
+  mutate(home_pts_clean = round(home_pts_est),
+         away_pts_clean = round(away_pts_est)) %>%
+  mutate(final_score_proj = paste(home_pts_clean, away_pts_clean, sep = "-"))
 
 write_csv(fanmatch, "fanmatch.csv")
