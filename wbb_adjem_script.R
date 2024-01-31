@@ -146,4 +146,4 @@ landing_page <- team_results %>%
          poss_rk = row_number((-poss))) %>%
   select(team_id, team, conf, record, conf_record, net_eff, net_rk, off_eff, off_rk, def_eff, def_rk, poss, poss_rk)
 
-write_csv(landing_page, "landing_page.csv")
+write_csv(landing_page, "/Users/ben/Desktop/Code/wbb-rankings/landing_page.csv")

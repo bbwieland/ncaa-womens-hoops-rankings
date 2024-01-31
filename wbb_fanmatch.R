@@ -48,4 +48,4 @@ fanmatch <- daily_games %>%
          away_pts_clean = round(away_pts_est)) %>%
   mutate(final_score_proj = paste(home_pts_clean, away_pts_clean, sep = "-"))
 
-write_csv(fanmatch, "fanmatch.csv")
+write_csv(fanmatch, "/Users/ben/Desktop/Code/wbb-rankings/fanmatch.csv")

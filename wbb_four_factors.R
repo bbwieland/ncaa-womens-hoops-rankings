@@ -167,5 +167,5 @@ four_factors_defense_ranked <- four_factors_defense %>%
          contains("ft_rate"),
          contains("orb_rate"))
 
-write_csv(four_factors_offense_ranked, "four_factors_o.csv")
-write_csv(four_factors_defense_ranked, "four_factors_d.csv")
+write_csv(four_factors_offense_ranked, "/Users/ben/Desktop/Code/wbb-rankings/four_factors_o.csv")
+write_csv(four_factors_defense_ranked, "/Users/ben/Desktop/Code/wbb-rankings/four_factors_d.csv")
