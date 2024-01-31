@@ -14,6 +14,14 @@ fanmatch <- readr::read_csv(
   "https://raw.githubusercontent.com/bbwieland/ncaa-womens-hoops-rankings/main/fanmatch.csv"
 )
 
+team_stats_o <- readr::read_csv(
+  "https://raw.githubusercontent.com/bbwieland/ncaa-womens-hoops-rankings/main/four_factors_o.csv"
+)
+
+team_stats_d <- readr::read_csv(
+  "https://raw.githubusercontent.com/bbwieland/ncaa-womens-hoops-rankings/main/four_factors_d.csv"
+)
+
 methodology <- readr::read_file("https://raw.githubusercontent.com/bbwieland/ncaa-womens-hoops-rankings/main/methodology.md")
 dictionary <- readr::read_file("https://raw.githubusercontent.com/bbwieland/ncaa-womens-hoops-rankings/main/dictionary.md")
 
@@ -26,21 +34,28 @@ off_def_format <- function(x)
 poss_format <- function(x)
   sprintf("%.1f", x)
 
+pct_format <- function(x)
+  sprintf("%.1f%%", x)
+
 fanmatch <- fanmatch %>%
   select(game_time, net_rk_home, team_home, net_rk_away, team_away, 
          final_score_proj, poss_est, quality, competitiveness)
 
 rating_width <- 125
-rank_width <- 40
+rank_width <- 35
+pct_width <- 70
+rank_font_size <- 12
+team_width <- 230
+conf_width <- 115
 
 green_red_scale <- c()
 tempo_scale <- c("#5552fa", "white", "#fa493c")
 rating_scale <- c("#c266ff", "white", "#64ff30")
 
 table_theme <- function() {
-  font_size = 20
+  font_size = 18
   font_color = "#222222"
-  header_font_size = 16
+  header_font_size = 14
   header_font_color = "#000000"
   cell_padding = 5
   centered_content = NULL
@@ -120,6 +135,10 @@ ui <- fluidPage(
              reactableOutput("homepage")),
     tabPanel(title = "Matchups",
              reactableOutput("matchups")),
+    tabPanel(title = "Offensive Team Stats",
+             reactableOutput("stats_o")),
+    tabPanel(title = "Defensive Team Stats",
+             reactableOutput("stats_d")),
     tabPanel(title = "Methodology",
              includeMarkdown(methodology)),
     tabPanel(title = "Dictionary",
@@ -179,7 +198,7 @@ server <- function(input, output) {
         style = cell_style(
           #landing_page,
           #color_by = "off_eff",
-          font_size = 14,
+          font_size = rank_font_size,
           vertical_align = "center"
           #colors = rating_scale
         )
@@ -191,7 +210,7 @@ server <- function(input, output) {
         style = cell_style(
           #landing_page,
           #color_by = "def_eff",
-          font_size = 14,
+          font_size = rank_font_size,
           vertical_align = "center"
           #colors = rev(rating_scale)
         ),
@@ -205,7 +224,7 @@ server <- function(input, output) {
         style = cell_style(
           #landing_page,
           #color_by = "net_eff",
-          font_size = 14,
+          font_size = rank_font_size,
           vertical_align = "center"
           #colors = rating_scale
         )
@@ -224,20 +243,20 @@ server <- function(input, output) {
         style = cell_style(
           # landing_page,
           # color_by = "poss",
-          font_size = 14,
+          font_size = rank_font_size,
           vertical_align = "center"
           # colors = tempo_scale
         )
       ),
       conf = colDef(
         name = "Conference",
-        width = 150,
+        width = conf_width,
         align = "center",
         sortable = FALSE,
         searchable = TRUE
       ),
       team = colDef(
-        width = 250,
+        width = team_width,
         sortable = FALSE,
         searchable = FALSE
       ),
@@ -277,12 +296,12 @@ server <- function(input, output) {
       ), 
       team_home = colDef(
         name = "Home Team",
-        width = 250,
+        width = team_width,
         sortable = FALSE
       ),
       team_away = colDef(
         name = "Road Team",
-        width = 250,
+        width = team_width,
         sortable = FALSE
       ),
       game_time = colDef(
@@ -321,6 +340,381 @@ server <- function(input, output) {
   )
   
   output$matchups <- renderReactable(matchups)
+  
+  ## Team Stats Offense Table ----
+  
+  stats_o <- reactable(team_stats_o,
+                       theme = table_theme(),
+                       pagination = FALSE,
+                       searchable = TRUE,
+                       language = reactableLang(searchPlaceholder = "Filter by conference...",
+                                                noData = "No conference found."),
+                       columnGroups = list(
+                         colGroup(name = "Shooting",
+                                  columns = c("fg_pct", "fg_pct_rk",
+                                              "ft_pct","ft_pct_rk",
+                                              "fg2_pct", "fg2_pct_rk",
+                                              "fg3_pct", "fg3_pct_rk",
+                                              "ts_pct", "ts_pct_rk")),
+                         colGroup(name = "Style",
+                                  columns = c("ast_rate","ast_rate_rk",
+                                             "fg3_rate","fg3_rate_rk")),
+                         colGroup(name = "Turnovers",
+                                  columns = c("to_rate","to_rate_rk")),
+                         colGroup(name = "FT RATE",
+                                  columns = c("ft_rate", "ft_rate_rk")),
+                         colGroup(name = "ORB RATE",
+                                  columns = c("orb_rate","orb_rate_rk"))
+                       ),
+                       columns = list(
+                         team = colDef(name = "Team",
+                                       width = team_width,
+                                       sortable = FALSE),
+                         conf = colDef(name = "Conf",
+                                       width = conf_width,
+                                       align = "center",
+                                       sortable = FALSE),
+                         fg_pct = colDef(name = "FG%",
+                                         format = colFormat(digits = 1,
+                                                            percent = TRUE),
+                                         defaultSortOrder = "desc",
+                                         width = pct_width),
+                         fg2_pct = colDef(name = "2PT%",
+                                         format = colFormat(digits = 1,
+                                                            percent = TRUE),
+                                         defaultSortOrder = "desc",
+                                         width = pct_width),
+                         fg3_pct = colDef(name = "3PT%",
+                                         format = colFormat(digits = 1,
+                                                            percent = TRUE),
+                                         defaultSortOrder = "desc",
+                                         width = pct_width),
+                         ft_pct = colDef(name = "FT%",
+                                         format = colFormat(digits = 1,
+                                                            percent = TRUE),
+                                         defaultSortOrder = "desc",
+                                         width = pct_width),
+                         ts_pct = colDef(name = "TS%",
+                                         format = colFormat(digits = 1,
+                                                            percent = TRUE),
+                                         defaultSortOrder = "desc",
+                                         width = pct_width),
+                         ast_rate = colDef(name = "AST%",
+                                         format = colFormat(digits = 1,
+                                                            percent = TRUE),
+                                         defaultSortOrder = "desc",
+                                         width = pct_width),
+                         fg3_rate = colDef(name = "3PA%",
+                                         format = colFormat(digits = 1,
+                                                            percent = TRUE),
+                                         defaultSortOrder = "desc",
+                                         width = pct_width),
+                         to_rate = colDef(name = "TO%",
+                                         format = colFormat(digits = 1,
+                                                            percent = TRUE),
+                                         defaultSortOrder = "asc",
+                                         width = pct_width),
+                         ft_rate = colDef(name = "FTR",
+                                         format = colFormat(digits = 1,
+                                                            percent = TRUE),
+                                         defaultSortOrder = "desc",
+                                         width = pct_width),
+                         orb_rate = colDef(name = "ORB%",
+                                         format = colFormat(digits = 1,
+                                                            percent = TRUE),
+                                         defaultSortOrder = "desc",
+                                         width = pct_width),
+                         fg_pct_rk = colDef(
+                           name = "",
+                           align = "center",
+                           width = rank_width,
+                           sortable = FALSE,
+                           style = cell_style(
+                             font_size = rank_font_size,
+                             vertical_align = "center"
+                           )
+                         ),
+                         ft_pct_rk = colDef(
+                           name = "",
+                           align = "center",
+                           width = rank_width,
+                           sortable = FALSE,
+                           style = cell_style(
+                             font_size = rank_font_size,
+                             vertical_align = "center"
+                           )
+                         ),
+                         fg2_pct_rk = colDef(
+                           name = "",
+                           align = "center",
+                           width = rank_width,
+                           sortable = FALSE,
+                           style = cell_style(
+                             font_size = rank_font_size,
+                             vertical_align = "center"
+                           )
+                         ),
+                         fg3_pct_rk = colDef(
+                           name = "",
+                           align = "center",
+                           width = rank_width,
+                           sortable = FALSE,
+                           style = cell_style(
+                             font_size = rank_font_size,
+                             vertical_align = "center"
+                           )
+                         ),
+                         ts_pct_rk = colDef(
+                           name = "",
+                           align = "center",
+                           width = rank_width,
+                           sortable = FALSE,
+                           style = cell_style(
+                             font_size = rank_font_size,
+                             vertical_align = "center"
+                           )
+                         ),
+                         ast_rate_rk = colDef(
+                           name = "",
+                           align = "center",
+                           width = rank_width,
+                           sortable = FALSE,
+                           style = cell_style(
+                             font_size = rank_font_size,
+                             vertical_align = "center"
+                           )
+                         ),
+                         fg3_rate_rk = colDef(
+                           name = "",
+                           align = "center",
+                           width = rank_width,
+                           sortable = FALSE,
+                           style = cell_style(
+                             font_size = rank_font_size,
+                             vertical_align = "center"
+                           )
+                         ),
+                         to_rate_rk = colDef(
+                           name = "",
+                           align = "center",
+                           width = rank_width,
+                           sortable = FALSE,
+                           style = cell_style(
+                             font_size = rank_font_size,
+                             vertical_align = "center"
+                           )
+                         ),
+                         ft_rate_rk = colDef(
+                           name = "",
+                           align = "center",
+                           width = rank_width,
+                           sortable = FALSE,
+                           style = cell_style(
+                             font_size = rank_font_size,
+                             vertical_align = "center"
+                           )
+                         ),
+                         orb_rate_rk = colDef(
+                           name = "",
+                           align = "center",
+                           width = rank_width,
+                           sortable = FALSE,
+                           style = cell_style(
+                             font_size = rank_font_size,
+                             vertical_align = "center"
+                           )
+                         )
+                       ))
+  
+  output$stats_o = renderReactable(stats_o)
+  
+  ## Team Stats Defense Table ----
+  
+  
+  stats_d <- reactable(team_stats_d,
+                       theme = table_theme(),
+                       pagination = FALSE,
+                       searchable = TRUE,
+                       language = reactableLang(searchPlaceholder = "Filter by conference...",
+                                                noData = "No conference found."),
+                       columnGroups = list(
+                         colGroup(name = "Shooting",
+                                  columns = c("fg_pct", "fg_pct_rk",
+                                              "ft_pct","ft_pct_rk",
+                                              "fg2_pct", "fg2_pct_rk",
+                                              "fg3_pct", "fg3_pct_rk",
+                                              "ts_pct", "ts_pct_rk")),
+                         colGroup(name = "Style",
+                                  columns = c("ast_rate","ast_rate_rk",
+                                              "fg3_rate","fg3_rate_rk")),
+                         colGroup(name = "Turnovers",
+                                  columns = c("to_rate","to_rate_rk")),
+                         colGroup(name = "FT RATE",
+                                  columns = c("ft_rate", "ft_rate_rk")),
+                         colGroup(name = "ORB RATE",
+                                  columns = c("orb_rate","orb_rate_rk"))
+                       ),
+                       columns = list(
+                         team = colDef(name = "Team",
+                                       width = team_width,
+                                       sortable = FALSE),
+                         conf = colDef(name = "Conf",
+                                       width = conf_width,
+                                       align = "center",
+                                       sortable = FALSE),
+                         fg_pct = colDef(name = "FG%",
+                                         format = colFormat(digits = 1,
+                                                            percent = TRUE),
+                                         defaultSortOrder = "asc",
+                                         width = pct_width),
+                         fg2_pct = colDef(name = "2PT%",
+                                          format = colFormat(digits = 1,
+                                                             percent = TRUE),
+                                          defaultSortOrder = "asc",
+                                          width = pct_width),
+                         fg3_pct = colDef(name = "3PT%",
+                                          format = colFormat(digits = 1,
+                                                             percent = TRUE),
+                                          defaultSortOrder = "asc",
+                                          width = pct_width),
+                         ft_pct = colDef(name = "FT%",
+                                         format = colFormat(digits = 1,
+                                                            percent = TRUE),
+                                         defaultSortOrder = "asc",
+                                         width = pct_width),
+                         ts_pct = colDef(name = "TS%",
+                                         format = colFormat(digits = 1,
+                                                            percent = TRUE),
+                                         defaultSortOrder = "asc",
+                                         width = pct_width),
+                         ast_rate = colDef(name = "AST%",
+                                           format = colFormat(digits = 1,
+                                                              percent = TRUE),
+                                           defaultSortOrder = "asc",
+                                           width = pct_width),
+                         fg3_rate = colDef(name = "3PA%",
+                                           format = colFormat(digits = 1,
+                                                              percent = TRUE),
+                                           defaultSortOrder = "asc",
+                                           width = pct_width),
+                         to_rate = colDef(name = "TO%",
+                                          format = colFormat(digits = 1,
+                                                             percent = TRUE),
+                                          defaultSortOrder = "desc",
+                                          width = pct_width),
+                         ft_rate = colDef(name = "FTR",
+                                          format = colFormat(digits = 1,
+                                                             percent = TRUE),
+                                          defaultSortOrder = "asc",
+                                          width = pct_width),
+                         orb_rate = colDef(name = "ORB%",
+                                           format = colFormat(digits = 1,
+                                                              percent = TRUE),
+                                           defaultSortOrder = "asc",
+                                           width = pct_width),
+                         fg_pct_rk = colDef(
+                           name = "",
+                           align = "center",
+                           width = rank_width,
+                           sortable = FALSE,
+                           style = cell_style(
+                             font_size = rank_font_size,
+                             vertical_align = "center"
+                           )
+                         ),
+                         ft_pct_rk = colDef(
+                           name = "",
+                           align = "center",
+                           width = rank_width,
+                           sortable = FALSE,
+                           style = cell_style(
+                             font_size = rank_font_size,
+                             vertical_align = "center"
+                           )
+                         ),
+                         fg2_pct_rk = colDef(
+                           name = "",
+                           align = "center",
+                           width = rank_width,
+                           sortable = FALSE,
+                           style = cell_style(
+                             font_size = rank_font_size,
+                             vertical_align = "center"
+                           )
+                         ),
+                         fg3_pct_rk = colDef(
+                           name = "",
+                           align = "center",
+                           width = rank_width,
+                           sortable = FALSE,
+                           style = cell_style(
+                             font_size = rank_font_size,
+                             vertical_align = "center"
+                           )
+                         ),
+                         ts_pct_rk = colDef(
+                           name = "",
+                           align = "center",
+                           width = rank_width,
+                           sortable = FALSE,
+                           style = cell_style(
+                             font_size = rank_font_size,
+                             vertical_align = "center"
+                           )
+                         ),
+                         ast_rate_rk = colDef(
+                           name = "",
+                           align = "center",
+                           width = rank_width,
+                           sortable = FALSE,
+                           style = cell_style(
+                             font_size = rank_font_size,
+                             vertical_align = "center"
+                           )
+                         ),
+                         fg3_rate_rk = colDef(
+                           name = "",
+                           align = "center",
+                           width = rank_width,
+                           sortable = FALSE,
+                           style = cell_style(
+                             font_size = rank_font_size,
+                             vertical_align = "center"
+                           )
+                         ),
+                         to_rate_rk = colDef(
+                           name = "",
+                           align = "center",
+                           width = rank_width,
+                           sortable = FALSE,
+                           style = cell_style(
+                             font_size = rank_font_size,
+                             vertical_align = "center"
+                           )
+                         ),
+                         ft_rate_rk = colDef(
+                           name = "",
+                           align = "center",
+                           width = rank_width,
+                           sortable = FALSE,
+                           style = cell_style(
+                             font_size = rank_font_size,
+                             vertical_align = "center"
+                           )
+                         ),
+                         orb_rate_rk = colDef(
+                           name = "",
+                           align = "center",
+                           width = rank_width,
+                           sortable = FALSE,
+                           style = cell_style(
+                             font_size = rank_font_size,
+                             vertical_align = "center"
+                           )
+                         )
+                       ))
+  
+  output$stats_d = renderReactable(stats_d)
   
 }
 
