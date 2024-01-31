@@ -3,6 +3,7 @@ library(readr)
 library(reactable)
 library(reactablefmtr)
 library(markdown)
+library(dplyr)
 
 landing_page <- readr::read_csv(
   "https://raw.githubusercontent.com/bbwieland/ncaa-womens-hoops-rankings/main/landing_page.csv"

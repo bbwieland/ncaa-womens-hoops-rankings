@@ -1,6 +1,6 @@
 library(git2r)
 
-source("wbb_adjem_script.R", echo = FALSE)
+source("/Users/ben/Desktop/Code/wbb-rankings/wbb_adjem_script.R", echo = FALSE)
 
 repo_path <- "/Users/ben/Desktop/Code/wbb-rankings"
 current_date_time <- format(Sys.time(), "%b %d, %Y at %H:%M %p %Z")

@@ -14,7 +14,7 @@ daily_games <- wehoop::load_wbb_schedule(seasons = current_year) %>%
 team_rankings <- read_csv("https://raw.githubusercontent.com/bbwieland/ncaa-womens-hoops-rankings/main/landing_page.csv") %>%
   select(team_id,team, off_eff, def_eff, poss, net_rk)
 
-daily_games %>%
+fanmatch <- daily_games %>%
   select(game_date_time, home_id, away_id) %>%
   inner_join(team_rankings, by = c("home_id" = "team_id")) %>%
   inner_join(team_rankings, by = c("away_id" = "team_id"), suffix = c("_home","_away")) %>%
@@ -27,6 +27,21 @@ daily_games %>%
   select(game_time, home_id, away_id, net_rk_home, team_home, 
          net_rk_away, team_away, 
          home_pts_est, away_pts_est, poss_est) %>%
+  mutate(est_diff = abs(home_pts_est - away_pts_est)) %>%
   arrange(game_time) %>%
   mutate(quality = 100 - (net_rk_home + net_rk_away - 3) / 7.23,
-         competitiveness = max(0,(100 - 4 * (abs(home_pts_est - away_pts_est)))))
+         competitiveness = ifelse(100 - 4 * est_diff > 0,
+                                  100 - 4 * est_diff,
+                                  0)) %>%
+  mutate(home_pts_est = case_when(
+    home_pts_est > away_pts_est & home_pts_est - away_pts_est < 1 ~ home_pts_est + 0.5,
+    away_pts_est > home_pts_est & away_pts_est - home_pts_est < 1 ~ home_pts_est - 0.5,
+    TRUE ~ home_pts_est
+  )) %>%
+  mutate(away_pts_est = case_when(
+    home_pts_est > away_pts_est & home_pts_est - away_pts_est < 1 ~ away_pts_est - 0.5,
+    away_pts_est > home_pts_est & away_pts_est - home_pts_est < 1 ~ away_pts_est + 0.5,
+    TRUE ~ away_pts_est
+  ))
+
+write_csv(fanmatch, "fanmatch.csv")
