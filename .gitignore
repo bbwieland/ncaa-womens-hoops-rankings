@@ -49,5 +49,7 @@ po/*~
 rsconnect/
 
 # logs
-
 *.log
+
+# GH management
+commit_and_push_csv_to_git.R
