@@ -160,6 +160,7 @@ server <- function(input, output) {
     theme = table_theme(),
     pagination = FALSE,
     searchable = TRUE,
+    highlight = TRUE,
     language = reactableLang(searchPlaceholder = "Filter by conference...",
                              noData = "No conference found."),
     columns = list(
@@ -278,6 +279,7 @@ server <- function(input, output) {
     theme = table_theme(),
     pagination = FALSE,
     searchable = TRUE,
+    highlight = TRUE,
     language = reactableLang(searchPlaceholder = "Filter by team...",
                              noData = "No team found."),
     columns = list(
@@ -347,6 +349,7 @@ server <- function(input, output) {
                        theme = table_theme(),
                        pagination = FALSE,
                        searchable = TRUE,
+                       highlight = TRUE,
                        language = reactableLang(searchPlaceholder = "Filter by conference...",
                                                 noData = "No conference found."),
                        columnGroups = list(
@@ -535,6 +538,7 @@ server <- function(input, output) {
                        theme = table_theme(),
                        pagination = FALSE,
                        searchable = TRUE,
+                       highlight = TRUE,
                        language = reactableLang(searchPlaceholder = "Filter by conference...",
                                                 noData = "No conference found."),
                        columnGroups = list(
