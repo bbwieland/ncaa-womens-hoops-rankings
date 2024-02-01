@@ -1,4 +1,4 @@
-library(tidyverse, quietly = TRUE)
+suppressMessages(library(tidyverse, quietly = TRUE))
 library(wehoop, quietly = TRUE)
 library(cbbdata, quietly = TRUE)
 

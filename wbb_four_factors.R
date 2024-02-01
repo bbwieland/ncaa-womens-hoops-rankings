@@ -1,4 +1,4 @@
-library(tidyverse, quietly = TRUE)
+suppressWarnings(library(tidyverse, quietly = TRUE))
 library(wehoop, quietly = TRUE)
 library(cbbdata, quietly = TRUE)
 
