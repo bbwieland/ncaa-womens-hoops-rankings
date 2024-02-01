@@ -1,6 +1,6 @@
-library(tidyverse)
-library(wehoop)
-library(cbbdata)
+library(tidyverse, quietly = TRUE)
+library(wehoop, quietly = TRUE)
+library(cbbdata, quietly = TRUE)
 
 current_year <- 2024
 current_date <- Sys.Date()
@@ -10,6 +10,8 @@ avg_ppp <- 0.923
 
 daily_games <- wehoop::load_wbb_schedule(seasons = current_year) %>%
   filter(status_type_completed == FALSE & game_date == current_date)
+
+print(paste("Successfully imported", nrow(daily_games), "games for", Sys.Date()))
 
 team_rankings <- read_csv("https://raw.githubusercontent.com/bbwieland/ncaa-womens-hoops-rankings/main/landing_page.csv") %>%
   select(team_id,team, off_eff, def_eff, poss, net_rk)
@@ -49,3 +51,5 @@ fanmatch <- daily_games %>%
   mutate(final_score_proj = paste(home_pts_clean, away_pts_clean, sep = "-"))
 
 write_csv(fanmatch, "/Users/ben/Desktop/Code/wbb-rankings/fanmatch.csv")
+
+print("Built FanMatch CSV and wrote to fanmatch.csv file.")

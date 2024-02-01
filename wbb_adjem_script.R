@@ -1,6 +1,6 @@
-library(tidyverse)
-library(wehoop)
-library(cbbdata)
+library(tidyverse, quietly = TRUE)
+library(wehoop, quietly = TRUE)
+library(cbbdata, quietly = TRUE)
 
 current_year <- 2024
 
@@ -27,6 +27,7 @@ scores <- box %>%
   filter(team_id %in% valid_team_ids & opponent_team_id %in% valid_team_ids) %>%
   distinct(paste(game_date, team_id), .keep_all = TRUE)
 
+print("Loaded adjEM data.")
 
 # Creating key variables: possessions & points per possession ------------
 
@@ -41,7 +42,6 @@ scores_clean <- scores %>%
          team_ppp = ppp, opponent_ppp = pppa,
          game_location = team_home_away, 
          conf_game, poss)
-
 
 # Home court advantage coefficients ---------------------------------------
 
@@ -103,8 +103,6 @@ calculate_team_coefficients <- function(team_id_season,
     mutate(team_id = team_id_season) %>%
     select(team_id, everything())
   
-  print(paste("Calculated coefficients for team",team_id_season))
-  
   return(team_eff_season)
   
 }
@@ -116,6 +114,7 @@ model_team_ids <- unique(scores_clean_hca$team_id) %>% sort()
 model_results <- map_dfr(.x = model_team_ids,
                          .f = ~ calculate_team_coefficients(.x))
 
+print("Calculated team coefficients.")
 
 team_records <- scores %>%
   group_by(team_id) %>%
@@ -147,3 +146,5 @@ landing_page <- team_results %>%
   select(team_id, team, conf, record, conf_record, net_eff, net_rk, off_eff, off_rk, def_eff, def_rk, poss, poss_rk)
 
 write_csv(landing_page, "/Users/ben/Desktop/Code/wbb-rankings/landing_page.csv")
+
+print("Built landing page CSV and wrote to landing_page.csv file.")

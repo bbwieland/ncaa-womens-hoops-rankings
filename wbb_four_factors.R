@@ -1,6 +1,6 @@
-library(tidyverse)
-library(wehoop)
-library(cbbdata)
+library(tidyverse, quietly = TRUE)
+library(wehoop, quietly = TRUE)
+library(cbbdata, quietly = TRUE)
 
 current_year <- 2024
 
@@ -37,6 +37,8 @@ scores_box <- scores_clean %>%
          opp_defensive_rebounds = ifelse(obs == 1, lead(defensive_rebounds), lag(defensive_rebounds))) %>%
   ungroup() %>%
   mutate(points = as.numeric(points))
+
+print("Aggregated box scores for team stats page.")
 
 team_stats_offense <- scores_box %>%
   group_by(team_id) %>%
@@ -168,4 +170,7 @@ four_factors_defense_ranked <- four_factors_defense %>%
          contains("orb_rate"))
 
 write_csv(four_factors_offense_ranked, "/Users/ben/Desktop/Code/wbb-rankings/four_factors_o.csv")
+print("Built offensive team stats CSV and wrote to four_factors_o.csv filepath.")
+
 write_csv(four_factors_defense_ranked, "/Users/ben/Desktop/Code/wbb-rankings/four_factors_d.csv")
+print("Built defensive team stats CSV and wrote to four_factors_d.csv filepath.")
