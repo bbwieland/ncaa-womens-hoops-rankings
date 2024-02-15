@@ -37,3 +37,4 @@ rsconnect/
 *.log
 # GH management
 data_update.R
+.DS_Store
